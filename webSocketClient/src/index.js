@@ -16,14 +16,16 @@ export default class App extends Component {
   state ={
     userName: '',
     isLoggedIn: false,
-    messages: []
+    messages: [], 
+    charts: {}
+
   }
 
   onButtonClicked = (value) => {
     client.send(JSON.stringify({
       type: "message",
-      msg: value,
-      user: this.state.userName
+      msg: "value",
+      user: "this.state.userName"
     }));
     this.setState({ searchVal: '' })
   }
@@ -31,26 +33,37 @@ export default class App extends Component {
     client.onopen = () => {
       console.log('WebSocket Client Connected');
     };
+    // client.send(JSON.stringify({
+    //   type: "message",
+    //   msg: value,
+    //   user: this.state.userName
+    // }));
+
     client.onmessage = (message) => {
+      console.log({message: message.data})
       const dataFromServer = JSON.parse(message.data);
       console.log('got reply! ', dataFromServer);
-      if (dataFromServer.type === "message") {
-        this.setState((state) =>
-          ({
-            messages: [...state.messages,
-            {
-              msg: dataFromServer.msg,
-              user: dataFromServer.user
-            }]
-          })
-        );
-      }
+      this.setState({charts: dataFromServer})
+    //   if (dataFromServer.type === "message") {
+    //     this.setState((state) =>
+    //       ({
+    //         messages: [...state.messages,
+    //         {
+    //           msg: dataFromServer.msg,
+    //           user: dataFromServer.user
+    //         }]
+    //       })
+    //     );
+    //   }
     };
   }
   render() {
     return (
       <div className="main" id='wrapper'>
-        {this.state.isLoggedIn ?
+        <div className="main" id='wrapper'>
+          {JSON.stringify(this.state.charts)}
+        </div>
+        {/* {this.state.isLoggedIn ?
         <div>
           <div className="title">
             <Text id="main-heading" type="secondary" style={{ fontSize: '36px' }}>Websocket Chat: {this.state.userName}</Text>
@@ -67,7 +80,7 @@ export default class App extends Component {
                 />
               </Card> 
             )}
-          </div>
+          </div>*/}
           <div className="bottom">
             <Search
               placeholder="input message and send"
@@ -78,7 +91,7 @@ export default class App extends Component {
               onSearch={value => this.onButtonClicked(value)}
             />
           </div> 
-        </div>
+        {/*</div>
         :
         <div style={{ padding: '200px 40px' }}>
           <Search
@@ -88,7 +101,7 @@ export default class App extends Component {
             onSearch={value => this.setState({ isLoggedIn: true, userName: value })}
           />
         </div>
-      }
+      } */}
       </div>
     )
   }
